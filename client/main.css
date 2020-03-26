@@ -1,0 +1,11 @@
+body{
+    text-align: center;
+}
+/* Ici on s'occupe de l'arène du premier tour */
+#dosPaquet{
+    cursor: pointer;
+}
+
+.tourEnCours{
+    background-color: lightblue;
+}
