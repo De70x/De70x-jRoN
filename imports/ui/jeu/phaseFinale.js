@@ -1,6 +1,7 @@
 import {Template} from 'meteor/templating';
 import {CartesCentrales} from "../../../lib/collections/mongoPhaseFinale";
 import {PhaseEnCours} from "../../../lib/collections/mongoPhaseEnCours";
+import {jeu} from "./phaseZero";
 
 Template.phaseFinaleTemplate.onCreated(() => {
     Meteor.subscribe('joueurs');
@@ -16,25 +17,6 @@ Template.body.helpers({
 
 Template.phaseFinaleTemplate.helpers({});
 
-// Cette méthode permet de passer à la phase 2 du jeu
-// On n'affiche plus la phase 1
-// On affiche la phase 2
-export const phaseFinale = () => {
-    var cartesCentrales = jeu.draw(10);
-
-    Meteor.call('phaseFinale', cartesCentrales, (error, result) => {
-        if (error) {
-            console.log(" Erreur dans joueurSuivant : ");
-            console.log(error);
-        } else {
-            if (result === true) {
-                console.log("On passe au suivant");
-            } else {
-                // Affichier un message pour prévenir l'utilisateur
-            }
-        }
-    });
-};
 
 // Au début, on n'affiche que les dos de cartes
 // toutes en noir, sauf celle sur laquelle il faut cliquer

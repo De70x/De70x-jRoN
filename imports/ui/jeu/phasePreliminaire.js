@@ -1,6 +1,5 @@
 import {Template} from "meteor/templating";
 import {CartesTirees} from "../../../lib/collections/mongoCartesTirees";
-import {phaseFinale} from "./phaseFinale";
 import {ListeJoueurs} from "../../../lib/collections/mongoJoueurs";
 import {jeu} from "./phaseZero";
 import unicode from "cards/src/unicode"
@@ -152,6 +151,36 @@ this.joueurSuivant = () => {
                 console.log("On passe au suivant");
             } else {
                 phaseFinale();
+            }
+        }
+    });
+};
+
+this.phaseFinale = () => {
+    const cartesCentrales = jeu.draw(10);
+    Router.go('phase2');
+    Meteor.call('changerPhase', "phase2", (error, result) => {
+        if (error) {
+            console.log(" Erreur dans joueurSuivant : ");
+            console.log(error);
+        } else {
+            if (result === true) {
+                console.log("On passe au suivant");
+            } else {
+                // Affichier un message pour prévenir l'utilisateur
+            }
+        }
+    });
+
+    Meteor.call('phaseFinale', cartesCentrales, (error, result) => {
+        if (error) {
+            console.log(" Erreur dans joueurSuivant : ");
+            console.log(error);
+        } else {
+            if (result === true) {
+                console.log("On passe au suivant");
+            } else {
+                // Affichier un message pour prévenir l'utilisateur
             }
         }
     });

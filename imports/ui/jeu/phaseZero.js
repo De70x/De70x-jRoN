@@ -21,7 +21,7 @@ Template.phaseZeroTemplate.events({
 });
 
 this.debuterPartie = () => {
-    Meteor.call('changerPhase', "phase0", (error, result) => {
+    Meteor.call('changerPhase', "phase1", (error, result) => {
         if (error) {
             console.log(" Erreur dans debuterPartie : ");
             console.log(error);
