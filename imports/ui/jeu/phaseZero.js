@@ -1,17 +1,19 @@
 import {Template} from 'meteor/templating';
-import {PhaseEnCours} from "../../../lib/collections/mongoPhaseEnCours";
 import '../../../lib/routes'
+import {estMaitreDuJeu} from "./jeu";
 
 const {decks} = require('cards');
-export const jeu = new decks.StandardDeck();
-jeu.shuffleAll();
 
-Template.phaseZeroTemplate.helpers({
-    isPhaseZero: () => {
-        return PhaseEnCours.find({_id: {$exists: true}}).count() === 0;
-    },
+Template.phaseZeroTemplate.onCreated(function () {
+    Meteor.subscribe('joueurs');
+    Meteor.subscribe('paquet');
 });
 
+Template.phaseZeroTemplate.helpers({
+    estMaitreDuJeu: () => {
+        return estMaitreDuJeu();
+    },
+});
 
 Template.phaseZeroTemplate.events({
     'click #debuter'(event) {
@@ -21,6 +23,9 @@ Template.phaseZeroTemplate.events({
 });
 
 this.debuterPartie = () => {
+    const paquet = new decks.StandardDeck();
+    paquet.shuffleAll();
+    jeu2 = paquet;
     Meteor.call('changerPhase', "phase1", (error, result) => {
         if (error) {
             console.log(" Erreur dans debuterPartie : ");

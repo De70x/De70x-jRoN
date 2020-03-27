@@ -5,6 +5,7 @@ class CarteCentrale{
         this.numeroTirage = numeroTirage;
         this.retournable = false;
         this.retournee = false;
+        this.enCours = false;
     }
 }
 

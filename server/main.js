@@ -1,18 +1,22 @@
 import {Meteor} from 'meteor/meteor';
 import {ListeJoueurs} from "../lib/collections/mongoJoueurs";
 import {CartesTirees} from "../lib/collections/mongoCartesTirees";
-import {CartesCentrales} from "../lib/collections/mongoPhaseFinale";
+import {CartesCentrales} from "../lib/collections/mongoCartesCentrales";
 import {PhaseEnCours} from "../lib/collections/mongoPhaseEnCours";
+import {Paquet} from "../lib/collections/mongoPaquet";
 import {Joueur} from "../imports/ui/joueur/joueur";
 import {Carte} from "../imports/ui/carte/carte";
-import {CarteCentrale} from "../imports/ui/carte/carteCentrale";
 
 
 Meteor.startup(() => {
-    Router.route('/init', function () {
-        this.render('phaseZeroTemplate');
-    });
     Meteor.methods({
+        'getNbJoueurs': function () {
+            try {
+                return ListeJoueurs.find({_id: {$exists: true}}).count();
+            } catch (error) {
+                console.log("Probleme à la récupération du nombre de joueurs" + error);
+            }
+        },
         'insertJoueur': function (pseudo) {
             try {
                 if (pseudo.length > 1 && ListeJoueurs.find({pseudo: pseudo}).count() === 0) {
@@ -37,9 +41,7 @@ Meteor.startup(() => {
         },
         'deleteJoueur': function (pseudo) {
             try {
-                console.log("Pseudo à supprimer : " + pseudo);
                 if (ListeJoueurs.find({pseudo: pseudo}).count() !== 0) {
-                    console.log("tentative de suppression");
                     ListeJoueurs.remove({pseudo: pseudo});
                     return true;
                 } else {
@@ -70,7 +72,6 @@ Meteor.startup(() => {
             try {
                 // On récupère la liste des id ordonnée avec la colonne ordreJoueur
                 var idJoueursEtCartes = ListeJoueurs.find({}, {fields: {'_id': 1, 'mainDuJoueur': 2}}).fetch();
-                console.log(idJoueursEtCartes);
                 // L'id du joueur courant
                 var idJoueurEnCours = ListeJoueurs.findOne({tourEnCours: true}, {fields: {'_id': 1}});
 
@@ -85,7 +86,6 @@ Meteor.startup(() => {
                 });
                 // S'il n'y a pas de joueurs suivant, on doit passer à la phase 2
                 if (idJoueurSuivant === -1) {
-                    console.log("PHASE 2");
                     return false;
                 }
                 // On update les joueurs en conséquence
@@ -97,13 +97,15 @@ Meteor.startup(() => {
                 console.log(error);
             }
         },
-        'phaseFinale': (cartesCentrales) => {
+        'prepaPhaseFinale': (cartesCentrales) => {
             try {
-                const nbCartesTirees = CartesTirees.find({_id: {$exists: true}}).count();
-                let i = 1;
+                let i = 0;
                 cartesCentrales.forEach(carte => {
-                    CartesCentrales.insert(new CarteCentrale(carte,i));
-                    i++;
+                    if (i === 0) {
+                        carte.retournable = true;
+                    }
+                    CartesCentrales.insert(carte);
+                    i++
                 });
                 return true;
             } catch (error) {
@@ -112,8 +114,12 @@ Meteor.startup(() => {
         },
         'changerPhase': (phase) => {
             try {
-                let idPhaseEnCours = PhaseEnCours.find({_id: {$exists: true}}, {fields : {'_id' : 1}}).fetch();
-                PhaseEnCours.upsert({_id:idPhaseEnCours},{phase: phase});
+                let idPhaseEnCours = PhaseEnCours.find({_id: {$exists: true}}, {fields: {'_id': 1}}).fetch()[0];
+                if (idPhaseEnCours !== undefined) {
+                    PhaseEnCours.upsert({_id: idPhaseEnCours._id}, {phase: phase});
+                } else {
+                    PhaseEnCours.insert({phase: phase});
+                }
                 return true;
             } catch (error) {
                 console.log("erreur lors de la génération de la phase finale: " + error);
@@ -121,12 +127,92 @@ Meteor.startup(() => {
         },
         'onEnEstOu': () => {
             try {
-                let idPhaseEnCours = PhaseEnCours.find({_id: {$exists: true}}, {fields : {'phase' : 1}}).fetch();
-                PhaseEnCours.upsert({phase: 'phasePreliminaire'});
+                let idPhaseEnCours = PhaseEnCours.find({_id: {$exists: true}}, {fields: {'phase': 1}}).fetch();
                 return true;
             } catch (error) {
                 console.log("erreur lors de la génération de la phase finale: " + error);
             }
-        }
+        },
+        'clearDB': () => {
+            try {
+                CartesCentrales.remove({});
+                CartesTirees.remove({});
+                ListeJoueurs.remove({});
+                PhaseEnCours.remove({});
+                Paquet.remove({});
+                return true;
+            } catch (error) {
+                console.log("erreur lors de la génération de la phase finale: " + error);
+            }
+        },
+        'nextCarte': (numeroTirage) => {
+            try {
+                let idCarte = CartesCentrales.find({numeroTirage: numeroTirage}, {fields: {'_id': 1}}).fetch()[0];
+                console.log(numeroTirage);
+                console.log(idCarte);
+                let idCarteSuivante = CartesCentrales.find({numeroTirage: numeroTirage + 1}, {fields: {'_id': 1}}).fetch()[0];
+                if (idCarte !== undefined) {
+                    CartesCentrales.update({_id: idCarte._id}, {$set: {retournee: true}});
+                    if (idCarteSuivante !== undefined) {
+                        CartesCentrales.update({_id: idCarteSuivante._id}, {$set: {retournable: true}});
+                        return true;
+                    }
+                }
+                return false;
+            } catch (error) {
+                console.log("erreur lors de la génération de la phase finale: " + error);
+            }
+        },
+        'repioche': (carteTiree) => {
+            try {
+                // On récupère les id des cartes retournées
+                const listIdCartesRetournees = CartesCentrales.find({retournee: true}, {fields: {'_id': 1}}).fetch();
+                console.log(listIdCartesRetournees);
+                const idDerniereCarteRetournee = listIdCartesRetournees[listIdCartesRetournees.length - 1]._id;
+                CartesCentrales.update({_id: idDerniereCarteRetournee}, {$set: {carte: carteTiree}});
+                return true;
+            } catch (error) {
+                console.log("erreur lors de la génération de la phase finale: " + error);
+            }
+        },
+        'choisirMJ': () => {
+            try {
+                // On retire le précédent MJ
+                ListeJoueurs.update({maitreDuJeu:true}, {$set : {maitreDuJeu: false}});
+                const nbJoueurs = ListeJoueurs.find({_id: {$exists: true}}).count();
+                const nbAleatoire = Math.random() * nbJoueurs;
+                const idAleatoire = Math.floor(nbAleatoire);
+                const idMJ = ListeJoueurs.find({_id: {$exists: true}}).fetch()[idAleatoire]._id;
+                ListeJoueurs.update({_id: idMJ}, {$set: {maitreDuJeu: true}});
+                return true;
+            } catch (error) {
+                console.log("erreur a la détermination du MJ : " + error);
+            }
+        },
+        'restart': () => {
+            try {
+                // On remet la base à zero sauf les joueurs
+                CartesCentrales.remove({});
+                CartesTirees.remove({});
+                PhaseEnCours.remove({});
+                // Pour les joueurs, on ne remet que les cartes à 0
+                ListeJoueurs.update({}, {$set: {mainDuJoueur: []}}, {multi: true});
+                Meteor.call('choisirMJ', (error, result) => {
+                    if (error) {
+                        console.log(" Erreur dans debuterPartie : ");
+                        console.log(error);
+                    } else {
+                        if (result === true) {
+                        } else {
+
+                        }
+                    }
+                });
+                return true;
+            } catch (error) {
+                console.log("erreur lors de la génération de la phase finale: " + error);
+            }
+        },
     });
 });
+

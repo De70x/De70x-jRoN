@@ -1,19 +1,17 @@
 <body>
-
 </body>
 
 <template name="ApplicationLayout">
     <header>
-        <h1>Rouge ou Noir ?</h1>
-        {{> estConnecte}}
+        <h1>Rouge ou Noir : {{ phase }}</h1>
     </header>
     <aside>
         {{> joueurs}}
     </aside>
     <main>
+        {{> estConnecte}}
         {{> yield}}
     </main>
-
 </template>
 
 <template name="estConnecte">
@@ -25,63 +23,94 @@
 </template>
 
 <template name="phaseZeroTemplate">
-    <button type="submit" id="debuter">Commencer une partie</button>
+    <div class="{{ estMaitreDuJeu }}">
+        <button type="submit" id="debuter">Commencer une partie</button>
+    </div>
 </template>
 
 <template name="phasePreliminaireTemplate">
-    <span id="dosPaquet" style="color:darkred;font-size:100px;" class="carte">{{ dosPaquet }} </span>
-    {{#if derniereCarteExiste }}
-        {{#if isRed derniereCarte}}
-            <span style="color:red;font-size:100px;" class="carte">{{ getUnicode derniereCarte }} </span>
-        {{else}}
-            <span style="color:black;font-size:100px;" class="carte">{{ getUnicode derniereCarte  }} </span>
+    <div class="{{ estMaitreDuJeu }}">
+        <span id="dosPaquet" style="color:darkred;font-size:100px;" class="carte">{{ dosPaquet }} </span>
+        {{#if derniereCarteExiste }}
+            {{#if isRed derniereCarte}}
+                <span style="color:red;font-size:100px;" class="carte">{{ getUnicode derniereCarte }} </span>
+            {{else}}
+                <span style="color:black;font-size:100px;" class="carte">{{ getUnicode derniereCarte  }} </span>
+            {{/if}}
         {{/if}}
-    {{/if}}
+    </div>
 </template>
 
 <template name="phaseFinaleTemplate">
-    <div id="phaseFinale">
-        <talbe id="tableauPhaseFinale">
-            <tr>
-                <td colspan="2"></td>
-                <td colspan="4">Tu prends</td>
-                <td colspan="2"></td>
-            </tr>
-            <tr>
-                <td rowspan="2">Tu prends</td>
-                <td rowspan="2" id="mp">{{ mp }}</td>
-                <td id="tp1">{{ tp1 }}</td>
-                <td id="tp2">{{ tp2 }}</td>
-                <td id="tp3">{{ tp3 }}</td>
-                <td id="tp4">{{ tp4 }}</td>
-                <td rowspan="2" id="md">{{ md }}</td>
-                <td rowspan="2">Tu donnes</td>
-            </tr>
-            <tr>
-                <td id="td1">{{ td1 }}</td>
-                <td id="td2">{{ td2 }}</td>
-                <td id="td3">{{ td3 }}</td>
-                <td id="td4">{{ td4 }}</td>
-            </tr>
-            <tr>
-                <td colspan="2"></td>
-                <td colspan="4">Tu donnes</td>
-                <td colspan="2"></td>
-            </tr>
-        </talbe>
-        <button type="submit" id="terminer">Fin de chantier</button>
+    <div class="{{estMaitreDuJeu}}">
+        <span id="dosPaquetFinal" style="color:darkred;font-size:100px;" class="carte"> {{ dosPaquet }} </span>
+        <div id="phaseFinale">
+            <table id="tableauPhaseFinale">
+                <tr>
+                    <td colspan="2"></td>
+                    <td colspan="4">Tu prends</td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td rowspan="2">Tu prends</td>
+                    <td rowspan="2" id="tmp" class="carteFinale">{{afficheCarte tuMegaPrends}}</td>
+                    <td id="tp1" class="carteFinale">{{afficheCarte tp1}}</td>
+                    <td id="tp2" class="carteFinale">{{afficheCarte tp2}}</td>
+                    <td id="tp3" class="carteFinale">{{afficheCarte tp3}}</td>
+                    <td id="tp4" class="carteFinale">{{afficheCarte tp4}}</td>
+                    <td rowspan="2" id="tmd" class="carteFinale">{{afficheCarte tuMegaDonnes}}</td>
+                    <td rowspan="2">Tu donnes</td>
+                </tr>
+                <tr>
+                    <td id="td1" class="carteFinale">{{afficheCarte td1}}</td>
+                    <td id="td2" class="carteFinale">{{afficheCarte td2}}</td>
+                    <td id="td3" class="carteFinale">{{afficheCarte td3}}</td>
+                    <td id="td4" class="carteFinale">{{afficheCarte td4}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td colspan="4">Tu donnes</td>
+                    <td colspan="2"></td>
+                </tr>
+            </table>
+        </div>
+        {{#if finDeChantier}}
+            <button type="submit" id="terminer">Fin de chantier</button>
+        {{/if}}
     </div>
 </template>
 
 <template name="joueurs">
     <table>
-        <th>Liste des ZoubiPlayers</th>
+        <tr style="font-style: italic">Tour en cours : <img height="21" src="/images/jeton.png"/></tr>
+        <tr style="font-style: italic">Maître du jeu : <img height="21" src="/images/couronne.png"/></tr>
+        <th style="font-size: large">ZoubiPlayers</th>
         {{#each joueur in joueurs}}
             <tr>
+                <hr>
+            </tr>
+            <tr>
                 <td colspan="5" id="pseudo">{{ joueur.pseudo }}</td>
+
                 {{#if isEnCours joueur}}
-                    <td><img height="20" src="/images/jeton.png" /></td>
+                    <!-- Si c'est le joueur en cours-->
+                    {{#if isMJ joueur}}
+                        <!-- Et le maitre du jeu-->
+                        <td rowspan="2" class="images"><img height="21" src="/images/couronne.png"/><img height="21"
+                                                                                                         src="/images/jeton.png"/>
+                        </td>
+                    {{else}}
+                        <!-- Mais pas le maître du jeu-->
+                        <td rowspan="2" class="images"><img height="21" src="/images/jeton.png"/></td>
+                    {{/if}}
+                {{else}}
+                    <!-- Si ce n'est pas le joueur en cours-->
+                    {{#if isMJ joueur}}
+                        <!-- Mais le maître du jeu-->
+                        <td rowspan="2" class="images"><img height="21" src="/images/couronne.png"/></td>
+                    {{/if}}
                 {{/if}}
+
             </tr>
             <tr>
                 <td>

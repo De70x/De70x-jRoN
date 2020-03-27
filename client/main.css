@@ -1,6 +1,21 @@
 body{
     text-align: center;
 }
+
+aside, main{
+    display: inline-block;
+}
+aside{
+    float: left;
+}
+
+.nonMJ{
+    pointer-events: none;
+}
+
+#debuter{
+    margin-top: 50%;
+}
 /* Ici on s'occupe de l'arène du premier tour */
 #dosPaquet{
     cursor: pointer;
@@ -8,4 +23,18 @@ body{
 
 .tourEnCours{
     background-color: lightblue;
+}
+
+#tableauPhaseFinale{
+    margin: auto;
+}
+
+.carteFinale{
+    font-size: 100px;
+    cursor: pointer;
+}
+
+.images{
+    display:flex;
+    flex-direction: column;
 }

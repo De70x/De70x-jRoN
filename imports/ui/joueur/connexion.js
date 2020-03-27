@@ -1,4 +1,5 @@
 import './connexion.html';
+import { Session } from 'meteor/session'
 
 Template.connexion.onCreated(function () {
     Meteor.subscribe('joueurs')
@@ -14,6 +15,17 @@ this.ajouterJoueur = (pseudo) => {
                 Session.set('pseudoSession', pseudo);
             } else {
                 // Affichier un message pour prévenir l'utilisateur
+            }
+        }
+    });
+    Meteor.call('choisirMJ', (error, result) => {
+        if (error) {
+            console.log(" Erreur dans debuterPartie : ");
+            console.log(error);
+        } else {
+            if (result === true) {
+            } else {
+
             }
         }
     });
