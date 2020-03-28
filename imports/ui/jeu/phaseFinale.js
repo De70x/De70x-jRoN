@@ -3,6 +3,7 @@ import {CartesCentrales} from "../../../lib/collections/mongoCartesCentrales";
 import unicode from "cards/src/unicode"
 import {getUnicode} from "./phasePreliminaire";
 import {estMaitreDuJeu} from "./jeu";
+import {resolution} from "../jokers/jokers";
 
 let mapFinale = new Map();
 mapFinale.set('tp1', 0);
@@ -16,6 +17,9 @@ mapFinale.set('td4', 7);
 mapFinale.set('tmp', 8);
 mapFinale.set('tmd', 9);
 
+const tp = ['tp1','tp2','tp3','tp4','tmp'];
+const td = ['td1','td2','td3','td4','tmd'];
+
 
 Template.phaseFinaleTemplate.onCreated(() => {
     Meteor.subscribe('joueurs');
@@ -26,7 +30,7 @@ Template.phaseFinaleTemplate.helpers({
     dosPaquet: unicode.back,
     afficheCarte: (carteCentrale) => {
         // Si la carte n'est pas encore retournée
-        if (carteCentrale===undefined || !carteCentrale.retournee) {
+        if (carteCentrale === undefined || !carteCentrale.retournee) {
             return unicode.back;
         } else {
             let vRet;
@@ -107,7 +111,7 @@ Template.phaseFinaleTemplate.events({
     'click .carteFinale'(event) {
         let numeroTirage = mapFinale.get(event.target.id);
         let carte = CartesCentrales.find({numeroTirage: numeroTirage}).fetch()[0];
-        console.log(carte);
+
         if (carte.retournable) {
             console.log(event.target.id);
             Meteor.call('nextCarte', numeroTirage, (error, result) => {
@@ -115,25 +119,53 @@ Template.phaseFinaleTemplate.events({
                     console.log(" Erreur lors du clique sur une carte finale : ");
                     console.log(error);
                 } else {
-                    if (result === true) {
-
-                    } else {
+                    const rang = carte.carte.rank.shortName;
+                    let prendsOuDonnes;
+                    if(tp.includes(event.target.id)){
+                        prendsOuDonnes = "prends";
                     }
+                    if(td.includes(event.target.id)){
+                        prendsOuDonnes = "donnes";
+                    }
+                    console.log(prendsOuDonnes);
+                    Meteor.call('resolution', rang, prendsOuDonnes,(error, result) => {
+                        if (error) {
+                            console.log(" Erreur dans le delete total : ");
+                            console.log(error);
+                        } else {
+                            console.log(result);
+                        }
+                    });
                 }
             });
         }
     },
     'click #dosPaquetFinal'(event) {
+        console.log("clic final")
         const carteTiree = jeu2.draw(1)[0];
         Meteor.call('repioche', carteTiree, (error, result) => {
             if (error) {
                 console.log(" Erreur dans le delete total : ");
                 console.log(error);
             } else {
-                if (result === true) {
-                } else {
-
+                const rang = carteTiree.rank.shortName;
+                console.log(result);
+                let prendsOuDonnes;
+                if(result % 2 === 0){
+                    prendsOuDonnes = "prends";
                 }
+                if(result % 2 === 1){
+                    prendsOuDonnes = "donnes";
+                }
+                console.log(prendsOuDonnes);
+                Meteor.call('resolution', rang, prendsOuDonnes,(error, result) => {
+                    if (error) {
+                        console.log(" Erreur dans le delete total : ");
+                        console.log(error);
+                    } else {
+                        console.log(result);
+                    }
+                });
             }
         });
     },

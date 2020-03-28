@@ -6,6 +6,9 @@ class Joueur{
         this.tourEnCours = false;
         this.maitreDuJeu = false;
         this.ordreJoueur = ordreJoueur;
+        this.tp = false;
+        this.td = false;
+        this.joker = false;
     }
 }
 

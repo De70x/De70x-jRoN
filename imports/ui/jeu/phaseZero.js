@@ -20,6 +20,15 @@ Template.phaseZeroTemplate.events({
         Router.go('phase1');
         debuterPartie();
     },
+    'click #mj'(event){
+        Meteor.call('choisirMJ', (error, result) => {
+            if (error) {
+                console.log(" Erreur dans debuterPartie : ");
+                console.log(error);
+            } else {
+            }
+        });
+    },
 });
 
 this.debuterPartie = () => {

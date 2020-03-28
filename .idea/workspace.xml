@@ -2,19 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bf8a0885-ede8-4256-aca1-b49070868652" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/collections/mongoPaquet.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/imports/ui/jokers/jokers.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/collections/mongoJokers.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/main.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/imports/ui/carte/carteCentrale.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/carte/carteCentrale.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.meteor/packages" beforeDir="false" afterPath="$PROJECT_DIR$/.meteor/packages" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.meteor/versions" beforeDir="false" afterPath="$PROJECT_DIR$/.meteor/versions" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imports/ui/jeu/jeu.html" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/jeu/jeu.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imports/ui/jeu/jeu.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/jeu/jeu.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imports/ui/jeu/phaseFinale.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/jeu/phaseFinale.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/imports/ui/jeu/phasePreliminaire.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/jeu/phasePreliminaire.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imports/ui/jeu/phaseZero.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/jeu/phaseZero.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/joueur/connexion.html" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/joueur/connexion.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imports/ui/joueur/connexion.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/joueur/connexion.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/joueur/joueur.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/joueur/joueur.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imports/ui/joueur/joueurs.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/joueur/joueurs.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/collections/mongoPhaseFinale.js" beforeDir="false" afterPath="$PROJECT_DIR$/lib/collections/mongoCartesCentrales.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/images/joker_ico.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/server/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/main.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -99,7 +99,9 @@
       <workItem from="1585200580369" duration="6737000" />
       <workItem from="1585211444365" duration="291000" />
       <workItem from="1585219276715" duration="21823000" />
-      <workItem from="1585290243204" duration="28865000" />
+      <workItem from="1585290243204" duration="29836000" />
+      <workItem from="1585328046388" duration="20645000" />
+      <workItem from="1585411938081" duration="1569000" />
     </task>
     <servers />
   </component>
@@ -141,19 +143,20 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="461" y="163" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585158745066" />
-    <state x="657" y="118" width="861" height="788" key="find.popup" timestamp="1585325574273">
+    <state x="657" y="118" width="861" height="788" key="find.popup" timestamp="1585412968881">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="657" y="118" width="861" height="788" key="find.popup/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585325574273" />
+    <state x="657" y="118" width="861" height="788" key="find.popup/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585336426657" />
+    <state x="657" y="118" width="861" height="788" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1585412968881" />
     <state x="677" y="329" key="jetbrains.nodejs.interpreters-dialog" timestamp="1585057742217">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="677" y="329" key="jetbrains.nodejs.interpreters-dialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585057742217" />
-    <state x="616" y="240" key="run.anything.popup" timestamp="1585121877294">
+    <state x="616" y="240" key="run.anything.popup" timestamp="1585412705735">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585121877294" />
-    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1584903739526" />
+    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585336633009" />
+    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1585412705735" />
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1585139924796">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

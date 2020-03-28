@@ -71,13 +71,13 @@ Meteor.startup(() => {
         'nextJoueur': function () {
             try {
                 // On récupère la liste des id ordonnée avec la colonne ordreJoueur
-                var idJoueursEtCartes = ListeJoueurs.find({}, {fields: {'_id': 1, 'mainDuJoueur': 2}}).fetch();
+                const idJoueursEtCartes = ListeJoueurs.find({}, {fields: {'_id': 1, 'mainDuJoueur': 2}}).fetch();
                 // L'id du joueur courant
-                var idJoueurEnCours = ListeJoueurs.findOne({tourEnCours: true}, {fields: {'_id': 1}});
+                const idJoueurEnCours = ListeJoueurs.findOne({tourEnCours: true}, {fields: {'_id': 1}});
 
                 // Le joueur ayant le moins de carte sera le joueur en cours
-                var idJoueurSuivant = -1;
-                var nbCarte = 3;
+                let idJoueurSuivant = -1;
+                let nbCarte = 3;
                 idJoueursEtCartes.forEach(elem => {
                     if (elem.mainDuJoueur.length <= nbCarte) {
                         nbCarte = elem.mainDuJoueur.length;
@@ -148,8 +148,6 @@ Meteor.startup(() => {
         'nextCarte': (numeroTirage) => {
             try {
                 let idCarte = CartesCentrales.find({numeroTirage: numeroTirage}, {fields: {'_id': 1}}).fetch()[0];
-                console.log(numeroTirage);
-                console.log(idCarte);
                 let idCarteSuivante = CartesCentrales.find({numeroTirage: numeroTirage + 1}, {fields: {'_id': 1}}).fetch()[0];
                 if (idCarte !== undefined) {
                     CartesCentrales.update({_id: idCarte._id}, {$set: {retournee: true}});
@@ -167,10 +165,9 @@ Meteor.startup(() => {
             try {
                 // On récupère les id des cartes retournées
                 const listIdCartesRetournees = CartesCentrales.find({retournee: true}, {fields: {'_id': 1}}).fetch();
-                console.log(listIdCartesRetournees);
                 const idDerniereCarteRetournee = listIdCartesRetournees[listIdCartesRetournees.length - 1]._id;
                 CartesCentrales.update({_id: idDerniereCarteRetournee}, {$set: {carte: carteTiree}});
-                return true;
+                return listIdCartesRetournees.length - 1;
             } catch (error) {
                 console.log("erreur lors de la génération de la phase finale: " + error);
             }
@@ -178,7 +175,7 @@ Meteor.startup(() => {
         'choisirMJ': () => {
             try {
                 // On retire le précédent MJ
-                ListeJoueurs.update({maitreDuJeu:true}, {$set : {maitreDuJeu: false}});
+                ListeJoueurs.update({maitreDuJeu:true}, {$set : {maitreDuJeu: false}}, {multi:true});
                 const nbJoueurs = ListeJoueurs.find({_id: {$exists: true}}).count();
                 const nbAleatoire = Math.random() * nbJoueurs;
                 const idAleatoire = Math.floor(nbAleatoire);
@@ -189,28 +186,64 @@ Meteor.startup(() => {
                 console.log("erreur a la détermination du MJ : " + error);
             }
         },
+        'resolution': (rang, prendsOuDonnes) => {
+            try {
+                console.log(prendsOuDonnes);
+                ListeJoueurs.update({}, {$set : {tp: false, td:false}}, {multi:true});
+                const cartesJoueurs = ListeJoueurs.find({_id:{$exists:true}}).fetch();
+                const idAUpdate = [];
+                cartesJoueurs.forEach(joueur => {
+                    const listeRangsJoueur = [];
+                    joueur.mainDuJoueur.forEach(carte => {
+                        listeRangsJoueur.push(carte[0].rank.shortName);
+                    });
+                    if(listeRangsJoueur.includes(rang)){
+                        idAUpdate.push(joueur._id);
+                    }
+                });
+                console.log(idAUpdate);
+                idAUpdate.forEach(id => {
+                    console.log(prendsOuDonnes);
+                    if(prendsOuDonnes === "prends"){
+                        ListeJoueurs.update({_id:id},{$set:{tp:true}});
+                    }
+                    if(prendsOuDonnes === "donnes"){
+                        ListeJoueurs.update({_id:id},{$set:{td:true}});
+                    }
+                });
+
+            } catch (error) {
+                console.log("erreur a la résolution des cartes : " + error);
+            }
+        },
         'restart': () => {
             try {
                 // On remet la base à zero sauf les joueurs
                 CartesCentrales.remove({});
                 CartesTirees.remove({});
                 PhaseEnCours.remove({});
-                // Pour les joueurs, on ne remet que les cartes à 0
-                ListeJoueurs.update({}, {$set: {mainDuJoueur: []}}, {multi: true});
-                Meteor.call('choisirMJ', (error, result) => {
-                    if (error) {
-                        console.log(" Erreur dans debuterPartie : ");
-                        console.log(error);
-                    } else {
-                        if (result === true) {
-                        } else {
-
-                        }
-                    }
-                });
+                ListeJoueurs.remove({});
                 return true;
             } catch (error) {
-                console.log("erreur lors de la génération de la phase finale: " + error);
+                console.log("erreur lors du restart " + error);
+            }
+        },
+        'jokerDB': (id) => {
+            try {
+                const jouerClique = ListeJoueurs.find({_id:id}, {fields:{'pseudo':1}}).fetch()[0];
+                ListeJoueurs.update({_id:id}, {$set:{joker:true}});
+                return jouerClique.pseudo;
+            } catch (error) {
+                console.log("erreur lors du joker : " + error);
+            }
+        },
+        'RAZJoker': () => {
+            console.log("RAZ des joker ! ");
+            try {
+                ListeJoueurs.update({maitreDuJeu:true}, {$set : {joker: false}}, {multi:true});
+                return true;
+            } catch (error) {
+                console.log("erreur lors du joker : " + error);
             }
         },
     });

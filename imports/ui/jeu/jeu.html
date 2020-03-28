@@ -2,6 +2,7 @@
 </body>
 
 <template name="ApplicationLayout">
+    <p>pseudos : {{personnesConnectees}}</p>
     <header>
         <h1>Rouge ou Noir : {{ phase }}</h1>
     </header>
@@ -23,6 +24,7 @@
 </template>
 
 <template name="phaseZeroTemplate">
+    <button type="submit" id="mj">Choisir MJ</button>
     <div class="{{ estMaitreDuJeu }}">
         <button type="submit" id="debuter">Commencer une partie</button>
     </div>
@@ -90,27 +92,42 @@
                 <hr>
             </tr>
             <tr>
-                <td colspan="5" id="pseudo">{{ joueur.pseudo }}</td>
+                <td colspan="4" id="pseudo">{{ joueur.pseudo }}</td>
 
                 {{#if isEnCours joueur}}
                     <!-- Si c'est le joueur en cours-->
                     {{#if isMJ joueur}}
                         <!-- Et le maitre du jeu-->
-                        <td rowspan="2" class="images"><img height="21" src="/images/couronne.png"/><img height="21"
-                                                                                                         src="/images/jeton.png"/>
+                        <td rowspan="1" class="images">
+                            <img height="21" src="/images/couronne.png"/>
+                            <img height="21" src="/images/jeton.png"/>
                         </td>
                     {{else}}
                         <!-- Mais pas le maître du jeu-->
-                        <td rowspan="2" class="images"><img height="21" src="/images/jeton.png"/></td>
+                        <td rowspan="1" class="images">
+                            <img height="21" src="/images/jeton.png"/>
+                        </td>
                     {{/if}}
                 {{else}}
                     <!-- Si ce n'est pas le joueur en cours-->
-                    {{#if isMJ joueur}}
-                        <!-- Mais le maître du jeu-->
-                        <td rowspan="2" class="images"><img height="21" src="/images/couronne.png"/></td>
-                    {{/if}}
+                    <td rowspan="1" class="images">
+                        {{#if isMJ joueur}}
+                            <!-- Mais le maître du jeu-->
+                            <img height="21" src="/images/couronne.png"/>
+                        {{/if}}
+                    </td>
                 {{/if}}
-
+                {{#if tuPrends joueur}}
+                    <td><img height="21" src="/images/drink.png"/> tu prends</td>
+                {{/if}}
+                {{#if tuDonnes joueur}}
+                    <td>
+                        <button class="tuDonnes" id="{{ idJoueur joueur}}">tu donnes</button>
+                    </td>
+                {{/if}}
+                {{#if marqueTuDonnes joueur}}
+                    <td><img height="21" src="/images/drink.png"/> tu donnes</td>
+                {{/if}}
             </tr>
             <tr>
                 <td>

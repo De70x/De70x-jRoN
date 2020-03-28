@@ -41,6 +41,12 @@ Template.ApplicationLayout.helpers({
             return "Initialisation";
         }
     },
+    personnesConnectees:() =>{
+        let vRet = "";
+        const personneConnectee = ConnexionsLocales.find({}).fetch()[0];
+        vRet += personneConnectee.pseudo;
+        return vRet
+    },
 });
 
 Template.estConnecte.helpers({
