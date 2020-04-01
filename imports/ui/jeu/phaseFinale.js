@@ -184,12 +184,13 @@ Template.phaseFinaleTemplate.events({
 });
 
 export const resolution = (carte, prendsOuDonnes, nbGorgees) => {
-    Meteor.call('resolution', carte.rank.shortName, prendsOuDonnes, nbGorgees,(error, result) => {
+    $("#don").text();
+    Meteor.call('resolution', carte, prendsOuDonnes, nbGorgees, (error, result) => {
         if (error) {
             console.log(" Erreur dans le delete total : ");
             console.log(error);
         } else {
-            if(result === "donsAFaire"){
+            if (result === "donsAFaire") {
                 Meteor.call('changerPhase', "phaseDons", (error, result) => {
                     if (error) {
                         console.log(" Erreur dans joueurSuivant : ");

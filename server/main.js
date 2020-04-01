@@ -192,13 +192,20 @@ Meteor.startup(() => {
                 console.log("erreur lors de la génération de la phase finale: " + error);
             }
         },
-        'resolution': (rang, prendsOuDonnes, nbGorgees) => {
+        'resolution': (carteAResourdre, prendsOuDonnes, nbGorgees) => {
             try {
                 // On remet dans un premier temps les gorgees a 0
-                ListeJoueurs.update({_id:{$exists:true}},{$set:{tp:false, nbGorgeesP:0, td:false, nbGorgees:0}}, {multi:true});
+                ListeJoueurs.update({_id: {$exists: true}}, {
+                    $set: {
+                        tp: false,
+                        nbGorgeesP: 0,
+                        td: false,
+                        nbGorgees: 0
+                    }
+                }, {multi: true});
                 console.log(nbGorgees);
-                ListeJoueurs.update({}, {$set : {tp: false, td:false}}, {multi:true});
-                const cartesJoueurs = ListeJoueurs.find({_id:{$exists:true}}).fetch();
+                ListeJoueurs.update({}, {$set: {tp: false, td: false}}, {multi: true});
+                const cartesJoueurs = ListeJoueurs.find({_id: {$exists: true}}).fetch();
                 cartesJoueurs.forEach(joueur => {
                     const listeRangsJoueur = [];
                     joueur.mainDuJoueur.forEach(carte => {
@@ -206,17 +213,17 @@ Meteor.startup(() => {
                     });
                     let coef = 0;
                     listeRangsJoueur.forEach(rangMainJoueur=>{
-                        if(rangMainJoueur === rang){
+                        if (rangMainJoueur === carteAResourdre.rank.shortName) {
                             coef++;
                         }
                     });
-                    if(listeRangsJoueur.includes(rang)){
-                        if(prendsOuDonnes === "prends"){
-                            ListeJoueurs.update({_id:joueur._id},{$set:{tp:true, nbGorgeesP:nbGorgees*coef}});
+                    if (listeRangsJoueur.includes(carteAResourdre.rank.shortName)) {
+                        if (prendsOuDonnes === "prends") {
+                            ListeJoueurs.update({_id: joueur._id}, {$set: {tp: true, nbGorgeesP: nbGorgees * coef}});
                         }
-                        if(prendsOuDonnes === "donnes"){
-                            ListeJoueurs.update({_id:joueur._id},{$set:{td:true, nbGorgeesD:nbGorgees*coef}});
-                            DonsGorgees.insert({joueur:joueur._id, donsEnCours:false});
+                        if (prendsOuDonnes === "donnes") {
+                            ListeJoueurs.update({_id: joueur._id}, {$set: {td: true, nbGorgeesD: nbGorgees * coef}});
+                            DonsGorgees.insert({carte: carteAResourdre, joueur: joueur._id, donsEnCours: false});
                         }
                     }
                 });
@@ -246,14 +253,18 @@ Meteor.startup(() => {
                     don += "Dans un élan de générosité inégalé... " + pseudoEmmeteur + " s'autoflagelle";
                 }
                 else {
-                    don = pseudoEmmeteur + " donne " + nbGorgees;
-                    if(nbGorgees%5 === 0){
-                        don += " cul sec ";
+                    don = pseudoEmmeteur + " donne ";
+                    if(nbGorgees%5 === 0) {
+                        if (nbGorgees / 5 === 1) {
+                            don += nbGorgees / 5 + " cul sec ";
+                        } else {
+                            don += nbGorgees / 5 + " culs secs ";
+                        }
                     }
                     else if (nbGorgees > 1) {
-                        don += " gorgées ";
+                        don += nbGorgees + " gorgées ";
                     } else {
-                        don += " gorgée ";
+                        don += nbGorgees + " gorgée ";
                     }
                     don += "à " + pseudoDestinataire;
                 }

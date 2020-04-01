@@ -6,7 +6,7 @@
             <div>
                 <h3>{{ joueurQuiDonne.pseudo }} est en train de distribuer ! </h3>
                 {{#if culSec}}
-                    <h4>nombre de culs secs restants : {{ nbCulSec }}</h4>
+                    <h4>nombre de culs secs restants : {{ nbCulsSecs }}</h4>
                 {{else}}
                     <h4>nombre de gorgées restantes : {{ joueurQuiDonne.nbGorgeesD }}</h4>
                 {{/if}}
@@ -25,7 +25,7 @@
                         <form class="donsGorgees">
                             <label for="gorgees">Nombre de grogées : </label>
                             <input type="number" name="gorgees" id="gorgees" min="1"
-                                   max="{{ joueurQuiDonne.nbGorgeesD }}" required>
+                                   max="{{ gorgeesMax }}" required>
                             <input type="hidden" name="destinataire" value="{{ joueur._id }}">
                             <br>
                             <button class="btn btn-dark" type="submit">Envoyer dans sa face !</button>

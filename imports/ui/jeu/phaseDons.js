@@ -1,6 +1,7 @@
 import {ListeJoueurs} from "../../../lib/collections/mongoJoueurs";
 import {DonsGorgees} from "../../../lib/collections/mongoDonsGorgees";
 import {getUnicode} from "./phasePreliminaire";
+
 const screenfull = require('screenfull');
 const cards = require('cards');
 
@@ -65,36 +66,62 @@ Template.phaseDonsTemplate.helpers({
         const joueursLocaux = ConnexionsLocales.find({_id:{$exists:true}}).fetch();
         const donneurEnCours = DonsGorgees.findOne({donsEnCours:true});
         let estDonneur="nonDonneur";
-        if(donneurEnCours !== undefined){
-            const pseudoDonneur = ListeJoueurs.findOne({_id:donneurEnCours.joueur}).pseudo;
+        if (donneurEnCours !== undefined) {
+            const pseudoDonneur = ListeJoueurs.findOne({_id: donneurEnCours.joueur}).pseudo;
             joueursLocaux.forEach(joueur => {
-                if(joueur.pseudo === pseudoDonneur){
+                if (joueur.pseudo === pseudoDonneur) {
                     estDonneur = "";
                 }
             });
         }
         return estDonneur;
     },
+    gorgeesMax: () => {
+        const donneurEnCours = DonsGorgees.findOne({donsEnCours: true});
+        const nbGorgees = ListeJoueurs.findOne({_id: donneurEnCours.joueur}).nbGorgeesD;
+        if (nbGorgees % 5 === 0) {
+            return nbGorgees / 5;
+        }
+        return nbGorgees;
+    },
     plusDeDons: () => {
-        return DonsGorgees.find({_id:{$exists:true}}).count() === 0;
+        return DonsGorgees.find({_id: {$exists: true}}).count() === 0;
     },
     joueurs: () => {
-        return ListeJoueurs.find({_id:{$exists:true}});
+        return ListeJoueurs.find({_id: {$exists: true}});
     },
-
+    culSec: () => {
+        const donneurEnCours = DonsGorgees.findOne({donsEnCours: true});
+        if (donneurEnCours !== undefined) {
+            return ListeJoueurs.findOne({_id: donneurEnCours.joueur}).nbGorgeesD % 5 === 0;
+        }
+    },
+    nbCulsSecs: () => {
+        const donneurEnCours = DonsGorgees.findOne({donsEnCours: true});
+        return ListeJoueurs.findOne({_id: donneurEnCours.joueur}).nbGorgeesD / 5;
+    }
 });
 
 Template.phaseDonsTemplate.events({
     'submit .donsGorgees'(event) {
         event.preventDefault();
-        const idEmmeteur = DonsGorgees.findOne({donsEnCours:true}).joueur;
+        const idEmmeteur = DonsGorgees.findOne({donsEnCours: true}).joueur;
         const idDestinataire = event.target.destinataire.value;
         const nbGorgees = event.target.gorgees.value;
-        donnerGorgees(idEmmeteur, idDestinataire, nbGorgees);
-
+        const nbGorgeesTotal = ListeJoueurs.findOne({_id: idEmmeteur}).nbGorgeesD;
+        if (nbGorgeesTotal % 5 === 0) {
+            donnerGorgees(idEmmeteur, idDestinataire, nbGorgees * 5);
+        } else {
+            donnerGorgees(idEmmeteur, idDestinataire, nbGorgees);
+        }
     },
     'click #banzai'(event) {
-        donnerGorgees(event.target.value, event.target.value, 1);
+        const nbGorgeesTotal = ListeJoueurs.findOne({_id: event.target.value}).nbGorgeesD;
+        if (nbGorgeesTotal % 5 === 0) {
+            donnerGorgees(event.target.value, event.target.value, 5);
+        } else {
+            donnerGorgees(event.target.value, event.target.value, 1);
+        }
     },
     'click .fullscreen'() {
         if (screenfull.isEnabled) {
