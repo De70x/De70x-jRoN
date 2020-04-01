@@ -1,7 +1,8 @@
+@import '../node_modules/bootstrap/scss/bootstrap.scss';
+
 body{
     text-align: center;
 }
-
 aside, main{
     display: inline-block;
 }
@@ -10,14 +11,21 @@ aside{
 }
 
 .nonMJ{
-    pointer-events: none;
+    pointer-events: none !important;
+}
+.nonDonneur{
+    pointer-events: none !important;
+}
+
+.cible{
+    margin:1%;
 }
 
 #debuter{
     margin-top: 50%;
 }
 /* Ici on s'occupe de l'arène du premier tour */
-#dosPaquet{
+#dosPaquet, #dosPaquetFinal{
     cursor: pointer;
 }
 
@@ -37,4 +45,18 @@ aside{
 .images{
     display:flex;
     flex-direction: column;
+}
+
+.fullscreen{
+    position: fixed;
+    right: 5%;
+    bottom: 5%;
+}
+
+#gorgees {
+    width: 3em;
+}
+
+#headDon{
+    display: inline-flex;
 }

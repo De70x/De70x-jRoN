@@ -1,0 +1,42 @@
+<template name="phaseDonsTemplate">
+    {{>menu}}
+    <!-- ici il faudrait afficher la carte en cours-->
+    <div class="{{estDonneur}}">
+        <div id="headDon">
+            <div>
+                <h3>{{ joueurQuiDonne.pseudo }} est en train de distribuer ! </h3>
+                {{#if culSec}}
+                    <h4>nombre de culs secs restants : {{ nbCulSec }}</h4>
+                {{else}}
+                    <h4>nombre de gorgées restantes : {{ joueurQuiDonne.nbGorgeesD }}</h4>
+                {{/if}}
+
+                <button class="btn btn-dark" id="banzai" value="{{ joueurQuiDonne._id }}">Banzaï</button>
+                <div id="don"></div>
+            </div>
+            {{ afficherCarte carteResolue }}
+        </div>
+
+        {{#each joueur in joueurs}}
+            {{#if tuDonnes joueur}}
+                <div class="card col-sm-4 cible">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ joueur.pseudo }}</h5>
+                        <form class="donsGorgees">
+                            <label for="gorgees">Nombre de grogées : </label>
+                            <input type="number" name="gorgees" id="gorgees" min="1"
+                                   max="{{ joueurQuiDonne.nbGorgeesD }}" required>
+                            <input type="hidden" name="destinataire" value="{{ joueur._id }}">
+                            <br>
+                            <button class="btn btn-dark" type="submit">Envoyer dans sa face !</button>
+                        </form>
+                    </div>
+                </div>
+            {{/if}}
+        {{/each}}
+    </div>
+    {{#if plusDeDons}}
+        <button class="btn btn-dark" id="retourPhase2">Retour aux cartes !</button>
+    {{/if}}
+    <img src="/images/fullscreen.png" class="fullscreen">
+</template>

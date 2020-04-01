@@ -10,10 +10,12 @@ import {CarteCentrale} from "../carte/carteCentrale";
 const cards = require('cards');
 
 Template.phasePreliminaireTemplate.onCreated(() => {
-    Meteor.subscribe('cartes_tirees');
     Meteor.subscribe('cartes_centrales');
-    Meteor.subscribe('paquet');
+    Meteor.subscribe('cartes_tirees');
+    Meteor.subscribe("jokers");
     Meteor.subscribe('joueurs');
+    Meteor.subscribe('paquet');
+    Meteor.subscribe('phase_en_cours');
 });
 
 Template.phasePreliminaireTemplate.helpers({
@@ -26,12 +28,12 @@ Template.phasePreliminaireTemplate.helpers({
     dosPaquet: unicode.back,
     derniereCarte: () => {
         var nbCartesTirees = CartesTirees.find({_id: {$exists: true}}).count();
-        return CartesTirees.findOne({'numeroTirage': nbCartesTirees}).carte[0];
+        return CartesTirees.findOne({'numeroTirage': nbCartesTirees}).carte;
     },
     getUnicode: (carte) => {
         return getUnicode(carte);
     },
-    estMaitreDuJeu: () => {
+    estMJ: () => {
         return estMaitreDuJeu();
     },
 });
@@ -39,14 +41,24 @@ Template.phasePreliminaireTemplate.helpers({
 Template.phasePreliminaireTemplate.events({
     'click #dosPaquet'(event) {
         // On pioche une carte
-        const carteTiree = jeu2.draw();
-        // On met la carte en base
-        tirerCarte(carteTiree);
-        // On l'ajoute au joueur en cours
-        var joueurEnCours = ListeJoueurs.findOne({tourEnCours: true}, {fields: {'_id': 1}, limit: 1});
-        piocherCarte(carteTiree, joueurEnCours);
-        // On passe au joueur suivant;
-        joueurSuivant();
+        let carteTiree;
+        if(estMaitreDuJeu() !== "nonMJ") {
+            Meteor.call('piocher', 1, (error, result) => {
+                if (error) {
+                    console.log(" Erreur dans le delete total : ");
+                    console.log(error);
+                } else {
+                    carteTiree = result[0].carte;
+                    // On met la carte en base
+                    tirerCarte(carteTiree);
+                    // On l'ajoute au joueur en cours
+                    var joueurEnCours = ListeJoueurs.findOne({tourEnCours: true}, {fields: {'_id': 1}, limit: 1});
+                    piocherCarte(carteTiree, joueurEnCours);
+                    // On passe au joueur suivant;
+                    joueurSuivant();
+                }
+            });
+        }
     },
 });
 
@@ -88,24 +100,29 @@ this.joueurSuivant = () => {
             console.log(error);
         } else {
             if (result === true) {
-                console.log("On passe au suivant");
+
             } else {
                 if (CartesCentrales.find({_id: {$exists: true}}).count() === 0) {
-                    const cartesCentralesFinale = []
-                    let i = 0;
-                    jeu2.draw(10).forEach(carte => {
-                        cartesCentralesFinale.push(new CarteCentrale(carte,i));
-                        i++;
-                    });
-                    Meteor.call('prepaPhaseFinale', cartesCentralesFinale, (error, result) => {
+                    const cartesCentralesFinale = [];
+                    let cartesTirees = [];
+                    Meteor.call('piocher', 10,(error, result) => {
                         if (error) {
-                            console.log(" Erreur dans prepaPhaseFinale : ");
+                            console.log(" Erreur dans le delete total : ");
                             console.log(error);
                         } else {
-                            if (result === true) {
-
-                            } else {
-                            }
+                            cartesTirees = result;
+                            let i = 0;
+                            cartesTirees.forEach(carte => {
+                                cartesCentralesFinale.push(new CarteCentrale(carte.carte,i));
+                                i++;
+                            });
+                            Meteor.call('prepaPhaseFinale', cartesCentralesFinale, (error, result) => {
+                                if (error) {
+                                    console.log(" Erreur dans prepaPhaseFinale : ");
+                                    console.log(error);
+                                } else {
+                                }
+                            });
                         }
                     });
                 }
@@ -115,7 +132,6 @@ this.joueurSuivant = () => {
                         console.log(error);
                     } else {
                         if (result === true) {
-                            console.log("On passe au suivant");
                         } else {
                             // Affichier un message pour prévenir l'utilisateur
                         }
@@ -189,6 +205,5 @@ export const getUnicode = (carte) => {
         default:
             break;
     }
-
     return unicode.unicodeCards.get(suit).get(rank);
 };

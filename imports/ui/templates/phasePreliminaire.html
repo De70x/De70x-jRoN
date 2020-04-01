@@ -1,0 +1,12 @@
+<template name="phasePreliminaireTemplate">
+    <div class="{{ estMJ }}">
+        <span id="dosPaquet" style="color:darkred;font-size:100px;" class="carte">{{ dosPaquet }} </span>
+        {{#if derniereCarteExiste }}
+            {{#if isRed derniereCarte}}
+                <span style="color:red;font-size:100px;" class="carte">{{ getUnicode derniereCarte }} </span>
+            {{else}}
+                <span style="color:black;font-size:100px;" class="carte">{{ getUnicode derniereCarte  }} </span>
+            {{/if}}
+        {{/if}}
+    </div>
+</template>

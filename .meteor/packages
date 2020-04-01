@@ -25,3 +25,4 @@ session
 iron:router
 iron:middleware-stack@1.1.0
 frozeman:persistent-minimongo
+fourseven:scss

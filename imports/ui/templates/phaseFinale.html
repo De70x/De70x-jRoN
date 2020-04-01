@@ -1,0 +1,38 @@
+<template name="phaseFinaleTemplate">
+    <div class="{{estMJ}}">
+        <span id="dosPaquetFinal" style="color:darkred;font-size:100px;" class="carte"> {{ dosPaquet }} </span>
+        <div id="phaseFinale">
+            <table id="tableauPhaseFinale">
+                <tr>
+                    <td colspan="2"></td>
+                    <td colspan="4">Tu prends</td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td rowspan="2">Tu prends</td>
+                    <td rowspan="2" id="tp5" class="carteFinale">{{afficheCarte tuMegaPrends}}</td>
+                    <td id="tp1" class="carteFinale">{{afficheCarte tp1}}</td>
+                    <td id="tp2" class="carteFinale">{{afficheCarte tp2}}</td>
+                    <td id="tp3" class="carteFinale">{{afficheCarte tp3}}</td>
+                    <td id="tp4" class="carteFinale">{{afficheCarte tp4}}</td>
+                    <td rowspan="2" id="td5" class="carteFinale">{{afficheCarte tuMegaDonnes}}</td>
+                    <td rowspan="2">Tu donnes</td>
+                </tr>
+                <tr>
+                    <td id="td1" class="carteFinale">{{afficheCarte td1}}</td>
+                    <td id="td2" class="carteFinale">{{afficheCarte td2}}</td>
+                    <td id="td3" class="carteFinale">{{afficheCarte td3}}</td>
+                    <td id="td4" class="carteFinale">{{afficheCarte td4}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td colspan="4">Tu donnes</td>
+                    <td colspan="2"></td>
+                </tr>
+            </table>
+        </div>
+        {{#if finDeChantier}}
+            <button type="submit" id="terminer">Fin de chantier</button>
+        {{/if}}
+    </div>
+</template>

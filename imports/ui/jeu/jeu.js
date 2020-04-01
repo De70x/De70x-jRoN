@@ -1,12 +1,22 @@
 import {Template} from 'meteor/templating';
-import {PhaseEnCours} from "../../../lib/collections/mongoPhaseEnCours";
 import {ListeJoueurs} from "../../../lib/collections/mongoJoueurs";
-import { Session } from 'meteor/session'
+import {Session} from 'meteor/session';
+const screenfull = require('screenfull');
+
+// immport des template
+import '../templates/phaseZero.html';
+import '../templates/phasePreliminaire.html';
+import '../templates/phaseFinale.html';
+import '../templates/phaseDons.html';
+import '../templates/joueurs.html';
+import '../templates/menu.html';
+import '../templates/connexion.html';
+
+
+const {decks} = require('cards');
 
 // HTML
 import './jeu.html';
-import '../joueur/joueurs.html';
-import '../joueur/connexion.html';
 
 // JS
 import '../joueur/connexion';
@@ -14,57 +24,50 @@ import '../../../lib/routes';
 import '../jeu/phaseZero';
 import '../jeu/phasePreliminaire';
 import '../jeu/phaseFinale';
-import '../joueur/joueurs'
-import '../joueur/joueur'
+import '../jeu/phaseDons';
+import '../joueur/joueurs';
+import '../joueur/joueur';
+import '../joueur/menu';
+
+
+import {Paquet} from "../../../lib/collections/mongoPaquet";
 
 Template.body.onCreated(function () {
+    Meteor.subscribe('cartes_centrales');
+    Meteor.subscribe('cartes_tirees');
+    Meteor.subscribe("jokers");
+    Meteor.subscribe('joueurs');
+    Meteor.subscribe('paquet');
     Meteor.subscribe('phase_en_cours');
 });
 
-Template.body.events({
+Template.ApplicationLayout.events({
+    'click .fullscreen'(event) {
+        if (screenfull.isEnabled) {
+            screenfull.toggle();
+        }
+    },
 });
 
 Template.ApplicationLayout.helpers({
-    phase: () => {
-        let phaseEnCours = PhaseEnCours.find({_id: {$exists: true}}, {fields: {'phase': 1}}).fetch();
-        console.log(phaseEnCours[0]);
-        if (phaseEnCours[0] !== undefined) {
-            if(phaseEnCours[0].phase === "phase1"){
-                Router.go("phase1");
-            }
-            if(phaseEnCours[0].phase === "phase2"){
-                Router.go("phase2");
-            }
-            return phaseEnCours[0].phase;
-        } else {
-            Router.go("phase0");
-            return "Initialisation";
-        }
-    },
-    personnesConnectees:() =>{
-        let vRet = "";
-        const personneConnectee = ConnexionsLocales.find({}).fetch()[0];
-        vRet += personneConnectee.pseudo;
-        return vRet
-    },
-});
-
-Template.estConnecte.helpers({
-    estConnecte: () => {
-        var pseudoSession = Session.get('pseudoSession');
-        return pseudoSession !== undefined;
-    },
 });
 
 export const estMaitreDuJeu = () => {
-        const joueurSession = Session.get("pseudoSession");
-        if(joueurSession === undefined){
-            return "nonMJ";
+    const joueursLocaux = ConnexionsLocales.find({_id:{$exists:true}}).fetch();
+    let unJoueurLocalEstMJ = false;
+    if (joueursLocaux === undefined) {
+        return "nonMJ";
+    }
+    joueursLocaux.forEach(joueur => {
+        const joueurDB = ListeJoueurs.findOne({pseudo: joueur.pseudo});
+        if (joueurDB !== undefined && joueurDB.maitreDuJeu) {
+            unJoueurLocalEstMJ = true;
         }
-        const joueurDB = ListeJoueurs.find({pseudo:joueurSession}).fetch()[0];
-        if(joueurDB !== undefined && !joueurDB.maitreDuJeu){
-            return "nonMJ";
-        }
+    });
+    if (!unJoueurLocalEstMJ) {
+        return "nonMJ";
+    }
+
 };
 
 deleteAll = () => {
@@ -75,11 +78,23 @@ deleteAll = () => {
             console.log(error);
         } else {
             if (result === true) {
-                Router.go("phase0");
+                Router.go("init");
             } else {
 
             }
         }
     });
+};
+
+export const initPaquet = () => {
+    const nbJoueurs = ListeJoueurs.find({_id:{$exists: true}}).count();
+    const nbPaquetsSupp = Math.floor((nbJoueurs-1)/10);
+    for(let i=0; i< nbPaquetsSupp+1; i++){
+        const jeuSupp = new decks.StandardDeck();
+        jeuSupp.shuffleAll();
+        jeuSupp.draw(52).forEach(carte=>{
+            Paquet.insert({carte:carte});
+        });
+    }
 };
 

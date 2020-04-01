@@ -1,24 +1,34 @@
 import {Template} from 'meteor/templating';
 import '../../../lib/routes'
 import {estMaitreDuJeu} from "./jeu";
-
-const {decks} = require('cards');
+import {ListeJoueurs} from "../../../lib/collections/mongoJoueurs";
 
 Template.phaseZeroTemplate.onCreated(function () {
+    Meteor.subscribe('cartes_centrales');
+    Meteor.subscribe('cartes_tirees');
+    Meteor.subscribe("jokers");
     Meteor.subscribe('joueurs');
     Meteor.subscribe('paquet');
+    Meteor.subscribe('phase_en_cours');
 });
 
 Template.phaseZeroTemplate.helpers({
-    estMaitreDuJeu: () => {
+    estMJ: () => {
         return estMaitreDuJeu();
+    },
+    pasDeMJ: () => {
+        return ListeJoueurs.find({maitreDuJeu:true}).count() === 0;
     },
 });
 
 Template.phaseZeroTemplate.events({
     'click #debuter'(event) {
-        Router.go('phase1');
-        debuterPartie();
+        if(ListeJoueurs.find({maitreDuJeu:true}).count() !== 0 ) {
+            debuterPartie();
+        }
+        else{
+            alert("Point de jeu sans maître ! ");
+        }
     },
     'click #mj'(event){
         Meteor.call('choisirMJ', (error, result) => {
@@ -32,18 +42,19 @@ Template.phaseZeroTemplate.events({
 });
 
 this.debuterPartie = () => {
-    const paquet = new decks.StandardDeck();
-    paquet.shuffleAll();
-    jeu2 = paquet;
     Meteor.call('changerPhase', "phase1", (error, result) => {
         if (error) {
             console.log(" Erreur dans debuterPartie : ");
             console.log(error);
         } else {
-            if (result === true) {
-            } else {
-
-            }
+            Meteor.call('premierJoueur', (error, result) => {
+                if (error) {
+                    console.log(" Erreur dans debuterPartie : ");
+                    console.log(error);
+                } else {
+                    Router.go('phase1');
+                }
+            });
         }
     });
 };

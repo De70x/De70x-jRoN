@@ -1,72 +1,70 @@
-import './connexion.html';
-import { Session } from 'meteor/session'
+import '../templates/connexion.html';
+const screenfull = require('screenfull');
 
 ConnexionsLocales = new Mongo.Collection('connexionsLocales', {connection: null});
-export const ConnexionsPersistees = new PersistentMinimongo(ConnexionsLocales);
+new PersistentMinimongo(ConnexionsLocales);
 
-Template.connexion.onCreated(function () {
-    Meteor.subscribe('joueurs')
+
+Template.connexionTemplate.onCreated(function () {
+    Meteor.subscribe('joueurs');
+    const instance = this;
+    instance.connexion_failed = new ReactiveVar({});
 });
 
-this.ajouterJoueur = (pseudo) => {
-    Session.set("pseudoSession", pseudo);
-    Meteor.call('insertJoueur', pseudo, (error, result) => {
-        if (error) {
-            console.log(" Erreur dans ajouterJoueur" + error);
-        } else {
-            if (result === true) {
-            } else {
-                // Affichier un message pour prévenir l'utilisateur
-            }
-        }
-    });
-};
+Template.connexionTemplate.helpers({
+    erreurConnexion:()=>{
+        console.log(Template.instance().connexion_failed.get());
+        return Template.instance().connexion_failed.get();
+    }
+});
 
-this.supprimerJoueur = (pseudo) => {
-    Meteor.call('deleteJoueur', pseudo, (error, result) => {
-        if (error) {
-            console.log(" Erreur dans supprimerJoueur" + error);
-        } else {
-            if (result === true) {
-                console.log(pseudo + " A bien été supprimé ! ");
-                Session.set('pseudoSession', undefined);
-            } else {
-                // Affichier un message pour prévenir l'utilisateur
-            }
-        }
-    });
-};
-
-Template.connexion.events({
-    'submit #connexion'(event) {
+Template.connexionTemplate.events({
+    'submit #connexion'(event, instance) {
         event.preventDefault();
         if (event.target.pseudo.value.length > 1) {
-            ajouterJoueur(event.target.pseudo.value);
-            ConnexionsLocales.insert({pseudo:event.target.pseudo.value});
+            Meteor.call('insertJoueur', event.target.pseudo.value, (error, result) => {
+                if (error) {
+                    console.log(" Erreur dans ajouterJoueur" + error);
+                } else {
+                    if(result != null) {
+                        ConnexionsLocales.insert({pseudo: event.target.pseudo.value});
+                        Router.go("phase0");
+                    }
+                    else{
+                        $(".pseudoModale").text(event.target.pseudo.value);
+                        $("#confirmer").val(event.target.pseudo.value);
+                        $('#modaleErreurConnexion').modal('toggle');
+                    }
 
+                }
+            });
         }
     },
+    'click .fullscreen'(event) {
+        if (screenfull.isEnabled) {
+            screenfull.toggle();
+        }
+    },
+    'click #confirmer'(event){
+        const joueursLocaux = ConnexionsLocales.find({_id:{$exists: true}}).fetch();
+        let joueurLocalExistant = false;
+        joueursLocaux.forEach(joueur => {
+            joueurLocalExistant = joueur.pseudo === event.target.value;
+        });
+        if(!joueurLocalExistant) {
+            ConnexionsLocales.insert({pseudo: event.target.value});
+        }
+        $('#modaleErreurConnexion').on('hidden.bs.modal', function() {
+            Router.go("phase0");
+        }).modal('hide');
+
+    },
 });
 
-Template.deconnexion.events({
-    'submit #deconnexion'(event) {
-        event.preventDefault();
-        supprimerJoueur(Session.get('pseudoSession'));
-    },
-    'click #terminer'(event) {
-        Meteor.call('restart', (error, result) => {
-            if (error) {
-                console.log(" Erreur dans le delete total : ");
-                console.log(error);
-            } else {
-                if (result === true) {
-                    Router.go("phase0");
-                } else {
-                }
-            }
-        });
-    },
-});
+export const deconnecte = () => {
+    return ConnexionsLocales.find({_id:{$exists:true}}).count() === 0 ;
+};
+
 
 
 

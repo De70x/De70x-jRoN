@@ -1,0 +1,51 @@
+<template name="joueurs">
+    <table>
+        <tr style="font-style: italic">Tour en cours : <img height="21" src="/images/jeton.png"/></tr>
+        <tr style="font-style: italic">Maître du jeu : <img height="21" src="/images/couronne.png"/></tr>
+        <th style="font-size: large">ZoubiPlayers</th>
+        {{#each joueur in joueurs}}
+            <tr>
+                <hr>
+            </tr>
+            <tr>
+                <td colspan="4" id="pseudo">{{ joueur.pseudo }}</td>
+
+                {{#if isEnCours joueur}}
+                    <!-- Si c'est le joueur en cours-->
+                    {{#if isMJ joueur}}
+                        <!-- Et le maitre du jeu-->
+                        <td rowspan="1" class="images">
+                            <img height="21" src="/images/couronne.png"/>
+                            <img height="21" src="/images/jeton.png"/>
+                        </td>
+                    {{else}}
+                        <!-- Mais pas le maître du jeu-->
+                        <td rowspan="1" class="images">
+                            <img height="21" src="/images/jeton.png"/>
+                        </td>
+                    {{/if}}
+                {{else}}
+                    <!-- Si ce n'est pas le joueur en cours-->
+                    <td rowspan="1" class="images">
+                        {{#if isMJ joueur}}
+                            <!-- Mais le maître du jeu-->
+                            <img height="21" src="/images/couronne.png"/>
+                        {{/if}}
+                    </td>
+                {{/if}}
+                <td>{{tuPrends joueur}}</td>
+            </tr>
+            <tr>
+                <td>
+                    {{#each carte in joueur.mainDuJoueur}}
+                        {{#if isRed carte}}
+                            <span style="color:red;font-size:40px;" class="carte">{{ getUnicode carte }} </span>
+                        {{else}}
+                            <span style="color:black;font-size:40px;" class="carte">{{ getUnicode carte }} </span>
+                        {{/if}}
+                    {{/each}}
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</template>

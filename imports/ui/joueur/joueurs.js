@@ -12,13 +12,13 @@ Template.joueurs.onCreated(function () {
 
 Template.joueurs.helpers({
     isRed: (card) => {
-        if (card[0] !== undefined) {
-            var couleur = card[0].suit.name;
+        if (card !== undefined) {
+            var couleur = card.suit.name;
         }
         return couleur === "hearts" || couleur === "diamonds";
     },
     getUnicode: (carte) => {
-        return getUnicode(carte[0]);
+        return getUnicode(carte);
     },
     isEnCours: (joueur) => {
         return joueur.tourEnCours;
@@ -28,10 +28,27 @@ Template.joueurs.helpers({
     },
     joueurs: ListeJoueurs.find(),
     tuPrends: (joueur) => {
-        return joueur.tp;
+        let vRet = "";
+        if(joueur.tp){
+            if(joueur.nbGorgeesP%5 === 0){
+                vRet += "<img height=\"30\" src=\"/images/culsec.png\"/>x" + (joueur.nbGorgeesP/5);
+            }
+            else{
+                vRet += "<img height=\"21\" src=\"/images/drink.png\"/>x" + joueur.nbGorgeesP;
+            }
+        }
+        return Spacebars.SafeString(vRet);
     },
     tuDonnes: (joueur) => {
         const joueurSession = ListeJoueurs.find({pseudo: Session.get("pseudoSession")}).fetch()[0];
+        const joueursLocaux = ConnexionsLocales.find({_id:{$exists:true}}).fetch();
+        let unJoueurLocalDonne;
+        if(joueursLocaux !== undefined){
+            joueursLocaux.forEach(joueurLocal => {
+
+            });
+        }
+
         return joueurSession !== undefined && joueurSession.td && joueur.pseudo !== Session.get("pseudoSession");
     },
     idJoueur: (joueur) => {
