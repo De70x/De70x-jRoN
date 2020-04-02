@@ -3,17 +3,25 @@
     <!-- ici il faudrait afficher la carte en cours-->
     <div class="{{estDonneur}}">
         <div id="headDon">
-            <div>
-                <h3>{{ joueurQuiDonne.pseudo }} est en train de distribuer ! </h3>
-                {{#if culSec}}
-                    <h4>nombre de culs secs restants : {{ nbCulsSecs }}</h4>
-                {{else}}
-                    <h4>nombre de gorgées restantes : {{ joueurQuiDonne.nbGorgeesD }}</h4>
-                {{/if}}
+            {{#if plusDeDons}}
+                <div>
+                    <h3>Tout le monde a fait ses dons à la communauté !</h3>
+                    <div id="don"><h4>{{ message }}</h4></div>
+                </div>
+            {{else}}
+                <div>
+                    <h3>{{ joueurQuiDonne.pseudo }} est en train de distribuer ! </h3>
+                    {{#if culSec}}
+                        <h4>nombre de culs secs restants : {{ nbCulsSecs }}</h4>
+                    {{else}}
+                        <h4>nombre de gorgées restantes : {{ joueurQuiDonne.nbGorgeesD }}</h4>
+                    {{/if}}
 
-                <button class="btn btn-dark" id="banzai" value="{{ joueurQuiDonne._id }}">Banzaï</button>
-                <div id="don"></div>
-            </div>
+                    <button class="btn btn-dark" id="banzai" value="{{ joueurQuiDonne._id }}">Banzaï</button>
+                    <div id="don"><h4>{{ message }}</h4></div>
+                </div>
+            {{/if}}
+
             {{ afficherCarte carteResolue }}
         </div>
 
@@ -38,5 +46,5 @@
     {{#if plusDeDons}}
         <button class="btn btn-dark" id="retourPhase2">Retour aux cartes !</button>
     {{/if}}
-    <img src="/images/fullscreen.png" class="fullscreen">
+    <img height="40" src="/images/fullscreen.png" class="fullscreen"/>
 </template>

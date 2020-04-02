@@ -2,7 +2,7 @@
     <style type="text/css">
         html, body {
             background-color: black;
-            background-image: url('images/champions.jpg');
+            background-image: url('/images/champions.jpg');
             background-size: auto;
             background-position: 50%;
             background-repeat: no-repeat;
@@ -58,16 +58,19 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    le pseudo <span class="pseudoModale"></span> existe déjà, souhaitez vous vous reconnecter avec ce dernier ou bien changer de pseudo ?
+                    le pseudo <span class="pseudoModale"></span> existe déjà, souhaitez vous vous reconnecter avec ce
+                    dernier ou bien changer de pseudo ?
                 </div>
                 <div class="modal-footer">
-                    <button id="confirmer" type="button" class="btn btn-primary" data-dismiss="modal" val="">Se reconnecter avec <span class="pseudoModale"></span></button>
+                    <button id="confirmer" type="button" class="btn btn-primary" data-dismiss="modal" val="">Se
+                        reconnecter avec <span class="pseudoModale"></span></button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Changer de pseudo</button>
                 </div>
             </div>
         </div>
     </div>
-
+    *
+    <!-- Formulaire de connexion -->
     <div class="container" id="login">
         <div class="d-flex justify-content-center h-100">
             <div class="card">
@@ -84,15 +87,17 @@
                         </div>
                         <div class="card-footer">
                             <div class="form-group">
-                                <!-- #modaleErreurConnexion -->
                                 <input type="submit" value="Connexion" class="btn login_btn">
+                            </div>
+                            <div class="form-group">
+                                <button id="annuler" class="btn login_btn">Annuler</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <img src="/images/fullscreen.png" class="fullscreen">
+        <img height="40" src="/images/fullscreen.png" class="fullscreen"/>
     </div>
 
 

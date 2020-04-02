@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bf8a0885-ede8-4256-aca1-b49070868652" name="Default Changelist" comment="">
+    <list default="true" id="bf8a0885-ede8-4256-aca1-b49070868652" name="Default Changelist" comment="sauvegarde avant tests affichages">
+      <change afterPath="$PROJECT_DIR$/lib/collections/mongoMessage.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/main.scss" beforeDir="false" afterPath="$PROJECT_DIR$/client/main.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/jeu/jeu.html" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/jeu/jeu.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/jeu/jeu.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/jeu/jeu.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imports/ui/jeu/phaseDons.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/jeu/phaseDons.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imports/ui/jeu/phaseFinale.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/jeu/phaseFinale.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/jeu/phasePreliminaire.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/jeu/phasePreliminaire.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/jeu/phaseZero.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/jeu/phaseZero.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/joueur/connexion.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/joueur/connexion.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/joueur/joueurs.js" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/joueur/joueurs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/templates/connexion.html" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/templates/connexion.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/templates/joueurs.html" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/templates/joueurs.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/templates/menu.html" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/templates/menu.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imports/ui/templates/phaseDons.html" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/templates/phaseDons.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imports/ui/templates/phaseFinale.html" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/templates/phaseFinale.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imports/ui/templates/phaseZero.html" beforeDir="false" afterPath="$PROJECT_DIR$/imports/ui/templates/phaseZero.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/collections/mongoJokers.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/lib/routes.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/main.js" afterDir="false" />
     </list>
@@ -108,15 +121,32 @@
       <workItem from="1585599354088" duration="2187000" />
       <workItem from="1585627913642" duration="21228000" />
       <workItem from="1585665592447" duration="5459000" />
-      <workItem from="1585717425120" duration="17672000" />
+      <workItem from="1585717425120" duration="30998000" />
+      <workItem from="1585802838707" duration="11819000" />
     </task>
+    <task id="LOCAL-00001" summary="On met la carte en cours en base pour l'afficher pour tout le monde">
+      <created>1585745750037</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1585745750037</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="CHECK_NEW_TODO" value="false" />
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="On met la carte en cours en base pour l'afficher pour tout le monde" />
+    <MESSAGE value="sauvegarde avant tests affichages" />
+    <option name="LAST_COMMIT_MESSAGE" value="sauvegarde avant tests affichages" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="730" y="324" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1585035041755">
@@ -128,10 +158,10 @@
     </state>
     <state x="690" y="268" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585648474612" />
     <state x="690" y="268" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1584900597357" />
-    <state x="585" y="115" key="CommitChangelistDialog2" timestamp="1585657540374">
+    <state x="585" y="115" key="CommitChangelistDialog2" timestamp="1585750111394">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="585" y="115" key="CommitChangelistDialog2/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585657540374" />
+    <state x="585" y="115" key="CommitChangelistDialog2/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585750111394" />
     <state x="595" y="299" key="EditFileWatcherDialog" timestamp="1585572980837">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -161,10 +191,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="461" y="163" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585631686075" />
-    <state x="883" y="120" width="861" height="788" key="find.popup" timestamp="1585744972385">
+    <state x="666" y="117" width="861" height="788" key="find.popup" timestamp="1585820570146">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="883" y="120" width="861" height="788" key="find.popup/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585744972385" />
+    <state x="666" y="117" width="861" height="788" key="find.popup/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1585820570146" />
     <state x="657" y="118" width="861" height="788" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1585493093975" />
     <state x="677" y="329" key="jetbrains.nodejs.interpreters-dialog" timestamp="1585057742217">
       <screen x="0" y="0" width="1920" height="1040" />

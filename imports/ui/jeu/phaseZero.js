@@ -6,10 +6,11 @@ import {ListeJoueurs} from "../../../lib/collections/mongoJoueurs";
 Template.phaseZeroTemplate.onCreated(function () {
     Meteor.subscribe('cartes_centrales');
     Meteor.subscribe('cartes_tirees');
-    Meteor.subscribe("jokers");
     Meteor.subscribe('joueurs');
     Meteor.subscribe('paquet');
     Meteor.subscribe('phase_en_cours');
+    Meteor.subscribe('dons_gorgees');
+    Meteor.subscribe('message');
 });
 
 Template.phaseZeroTemplate.helpers({
@@ -30,7 +31,7 @@ Template.phaseZeroTemplate.events({
             alert("Point de jeu sans maître ! ");
         }
     },
-    'click #mj'(event){
+    'click #mj'(event) {
         Meteor.call('choisirMJ', (error, result) => {
             if (error) {
                 console.log(" Erreur dans debuterPartie : ");
@@ -38,6 +39,9 @@ Template.phaseZeroTemplate.events({
             } else {
             }
         });
+    },
+    'click #reconnexion'(event) {
+        Router.go("connexion");
     },
 });
 

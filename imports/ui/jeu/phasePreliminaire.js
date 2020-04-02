@@ -12,7 +12,6 @@ const cards = require('cards');
 Template.phasePreliminaireTemplate.onCreated(() => {
     Meteor.subscribe('cartes_centrales');
     Meteor.subscribe('cartes_tirees');
-    Meteor.subscribe("jokers");
     Meteor.subscribe('joueurs');
     Meteor.subscribe('paquet');
     Meteor.subscribe('phase_en_cours');
@@ -20,7 +19,7 @@ Template.phasePreliminaireTemplate.onCreated(() => {
 
 Template.phasePreliminaireTemplate.helpers({
     isRed: (carte) => {
-        return carte.suit.name === "hearts" || carte.suit.name === "diamonds"
+        return carte.suit.name === "hearts" || carte.suit.name === "diamonds" || carte.suit === cards.suits.none
     },
     derniereCarteExiste: () => {
         return CartesTirees.find().count() > 0;
@@ -42,23 +41,21 @@ Template.phasePreliminaireTemplate.events({
     'click #dosPaquet'(event) {
         // On pioche une carte
         let carteTiree;
-        if(estMaitreDuJeu() !== "nonMJ") {
-            Meteor.call('piocher', 1, (error, result) => {
-                if (error) {
-                    console.log(" Erreur dans le delete total : ");
-                    console.log(error);
-                } else {
-                    carteTiree = result[0].carte;
-                    // On met la carte en base
-                    tirerCarte(carteTiree);
-                    // On l'ajoute au joueur en cours
-                    var joueurEnCours = ListeJoueurs.findOne({tourEnCours: true}, {fields: {'_id': 1}, limit: 1});
-                    piocherCarte(carteTiree, joueurEnCours);
-                    // On passe au joueur suivant;
-                    joueurSuivant();
-                }
-            });
-        }
+        Meteor.call('piocher', 1, (error, result) => {
+            if (error) {
+                console.log(" Erreur dans le delete total : ");
+                console.log(error);
+            } else {
+                carteTiree = result[0].carte;
+                // On met la carte en base
+                tirerCarte(carteTiree);
+                // On l'ajoute au joueur en cours
+                var joueurEnCours = ListeJoueurs.findOne({tourEnCours: true}, {fields: {'_id': 1}, limit: 1});
+                piocherCarte(carteTiree, joueurEnCours);
+                // On passe au joueur suivant;
+                joueurSuivant();
+            }
+        });
     },
 });
 
@@ -105,7 +102,7 @@ this.joueurSuivant = () => {
                 if (CartesCentrales.find({_id: {$exists: true}}).count() === 0) {
                     const cartesCentralesFinale = [];
                     let cartesTirees = [];
-                    Meteor.call('piocher', 10,(error, result) => {
+                    Meteor.call('piocher', 10, (error, result) => {
                         if (error) {
                             console.log(" Erreur dans le delete total : ");
                             console.log(error);
@@ -113,7 +110,7 @@ this.joueurSuivant = () => {
                             cartesTirees = result;
                             let i = 0;
                             cartesTirees.forEach(carte => {
-                                cartesCentralesFinale.push(new CarteCentrale(carte.carte,i));
+                                cartesCentralesFinale.push(new CarteCentrale(carte.carte, i));
                                 i++;
                             });
                             Meteor.call('prepaPhaseFinale', cartesCentralesFinale, (error, result) => {
@@ -205,5 +202,10 @@ export const getUnicode = (carte) => {
         default:
             break;
     }
-    return unicode.unicodeCards.get(suit).get(rank);
+    if (suit !== undefined && rank !== undefined) {
+        return unicode.unicodeCards.get(suit).get(rank);
+    } else {
+        return unicode.unicodeCards.get(cards.suits.none).get(cards.ranks.joker).get("white");
+    }
+
 };

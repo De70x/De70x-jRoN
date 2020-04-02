@@ -7,21 +7,42 @@ import {Paquet} from "../lib/collections/mongoPaquet";
 import {Joueur} from "../imports/ui/joueur/joueur";
 import {Carte} from "../imports/ui/carte/carte";
 import {DonsGorgees} from "../lib/collections/mongoDonsGorgees";
+import {Message} from "../lib/collections/mongoMessage";
+
+const {decks} = require('cards');
 
 Meteor.startup(() => {
     Meteor.methods({
         'insertJoueur': function (pseudo) {
             try {
-                if (pseudo.length > 1 && ListeJoueurs.find({pseudo: pseudo}).count() === 0) {
+                // On crée si le pseudo n'existe pas déjà insensible à la casse
+                const joueursDB = ListeJoueurs.find({_id: {$exists: true}}).fetch();
+                let joueurExisteDeja = false;
+                joueursDB.forEach(joueurDB => {
+                    if (pseudo.trim().toUpperCase() === joueurDB.pseudo.trim().toUpperCase()) {
+                        joueurExisteDeja = true;
+                    }
+                });
+
+                if (pseudo.trim().length > 1 && !joueurExisteDeja) {
                     let ordreMax = 0;
-                    const listeJoueurs = ListeJoueurs.find({_id:{$exists:true}}, {fields:{'ordreJoueur':1}});
+                    const listeJoueurs = ListeJoueurs.find({_id: {$exists: true}}, {fields: {'ordreJoueur': 1}});
                     listeJoueurs.forEach(joueur => {
-                        if(joueur.ordreJoueur > ordreMax){
+                        if (joueur.ordreJoueur > ordreMax) {
                             ordreMax = joueur.ordreJoueur;
                         }
                     });
-                    const joueurAInsere = new Joueur(pseudo, ordreMax+1);
+                    const joueurAInsere = new Joueur(pseudo, ordreMax + 1);
                     ListeJoueurs.insert(joueurAInsere);
+                    // Si on passe une dizaine, il faut ajouter un paquet de carte sinon il n'y en aura pas assez
+                    if (ListeJoueurs.find({_id: {$exists: true}}).count() % 10 === 1) {
+                        const jeuSupp = new decks.StandardDeck();
+                        jeuSupp.shuffleAll();
+                        jeuSupp.draw(52).forEach(carte => {
+                            Paquet.insert({carte: carte});
+                        });
+                    }
+
                     return joueurAInsere;
                 } else {
                     return null;
@@ -32,11 +53,11 @@ Meteor.startup(() => {
         },
         'premierJoueur': () => {
             try {
-                const joueurs = ListeJoueurs.find({_id:{$exists:true}},{fields:{'ordreJoueur':1}});
+                const joueurs = ListeJoueurs.find({_id: {$exists: true}}, {fields: {'ordreJoueur': 1}});
                 let ordreMax = 0;
                 let idPremier = -1;
                 joueurs.forEach(joueur => {
-                    if(joueur.ordreJoueur > ordreMax){
+                    if (joueur.ordreJoueur > ordreMax) {
                         ordreMax = joueur.ordreJoueur;
                         idPremier = joueur._id;
                     }
@@ -50,7 +71,7 @@ Meteor.startup(() => {
         'choisirMJ': () => {
             try {
                 // On retire le précédent MJ
-                ListeJoueurs.update({maitreDuJeu:true}, {$set : {maitreDuJeu: false}}, {multi:true});
+                ListeJoueurs.update({maitreDuJeu: true}, {$set: {maitreDuJeu: false}}, {multi: true});
                 const nbJoueurs = ListeJoueurs.find({_id: {$exists: true}}).count();
                 const nbAleatoire = Math.random() * nbJoueurs;
                 const idAleatoire = Math.floor(nbAleatoire);
@@ -64,14 +85,14 @@ Meteor.startup(() => {
         'piocher': function (nbCartes) {
             try {
                 const cartesTirees = [];
-                const nbCartesRestantes = Paquet.find({_id:{$exists:true}}).count();
+                const nbCartesRestantes = Paquet.find({_id: {$exists: true}}).count();
 
-                for(let i=0; i<nbCartes; i++){
+                for (let i = 0; i < nbCartes; i++) {
                     // Du fait que s'il y a plusieurs paquet, ils sont mélangés séparément, on génère de nouveau
                     // un caractère aléatoire ici pour que cela reste equiprobable.
-                    const nbAleatoire = Math.floor(Math.random() * (nbCartesRestantes-i));
-                    const carteTiree = Paquet.find({_id:{$exists:true}}).fetch()[nbAleatoire];
-                    Paquet.remove({_id:carteTiree._id});
+                    const nbAleatoire = Math.floor(Math.random() * (nbCartesRestantes - i));
+                    const carteTiree = Paquet.find({_id: {$exists: true}}).fetch()[nbAleatoire];
+                    Paquet.remove({_id: carteTiree._id});
                     cartesTirees.push(carteTiree);
                 }
                 return cartesTirees;
@@ -160,7 +181,7 @@ Meteor.startup(() => {
                 PhaseEnCours.remove({});
                 Paquet.remove({});
                 DonsGorgees.remove({});
-                return true;
+                Message.remove({});
             } catch (error) {
                 console.log("erreur lors de la génération de la phase finale: " + error);
             }
@@ -193,6 +214,8 @@ Meteor.startup(() => {
             }
         },
         'resolution': (carteAResourdre, prendsOuDonnes, nbGorgees) => {
+            // On supprime les messages existants
+            Message.remove({});
             try {
                 // On remet dans un premier temps les gorgees a 0
                 ListeJoueurs.update({_id: {$exists: true}}, {
@@ -203,8 +226,6 @@ Meteor.startup(() => {
                         nbGorgees: 0
                     }
                 }, {multi: true});
-                console.log(nbGorgees);
-                ListeJoueurs.update({}, {$set: {tp: false, td: false}}, {multi: true});
                 const cartesJoueurs = ListeJoueurs.find({_id: {$exists: true}}).fetch();
                 cartesJoueurs.forEach(joueur => {
                     const listeRangsJoueur = [];
@@ -212,7 +233,7 @@ Meteor.startup(() => {
                         listeRangsJoueur.push(carte.rank.shortName);
                     });
                     let coef = 0;
-                    listeRangsJoueur.forEach(rangMainJoueur=>{
+                    listeRangsJoueur.forEach(rangMainJoueur => {
                         if (rangMainJoueur === carteAResourdre.rank.shortName) {
                             coef++;
                         }
@@ -227,7 +248,7 @@ Meteor.startup(() => {
                         }
                     }
                 });
-                if(DonsGorgees.find({_id:{$exists:true}}).count() !== 0){
+                if (DonsGorgees.find({_id: {$exists: true}}).count() !== 0) {
                     return "donsAFaire";
                 }
                 return null;
@@ -238,54 +259,75 @@ Meteor.startup(() => {
         },
         'donsGorgees': (idEmmeteur, idDestinataire, nbGorgees) => {
             try {
-                const pseudoEmmeteur = ListeJoueurs.findOne({_id:idEmmeteur}).pseudo;
-                const pseudoDestinataire = ListeJoueurs.findOne({_id:idDestinataire}).pseudo;
-                ListeJoueurs.update({_id:idEmmeteur}, {$inc : {nbGorgeesD: -nbGorgees}});
-                const nbGorgeesRestantes = ListeJoueurs.findOne({_id:idEmmeteur}).nbGorgeesD;
+                const pseudoEmmeteur = ListeJoueurs.findOne({_id: idEmmeteur}).pseudo;
+                const pseudoDestinataire = ListeJoueurs.findOne({_id: idDestinataire}).pseudo;
+                ListeJoueurs.update({_id: idEmmeteur}, {$inc: {nbGorgeesD: -nbGorgees}});
+                const nbGorgeesRestantes = ListeJoueurs.findOne({_id: idEmmeteur}).nbGorgeesD;
 
-                if(nbGorgeesRestantes ===0){
-                    const idDelete = DonsGorgees.findOne({joueur:idEmmeteur})._id;
-                    DonsGorgees.remove({_id:idDelete});
+                const alea = Math.floor(Math.random() * 100);
+                console.log(alea);
+
+                if (nbGorgeesRestantes === 0) {
+                    const idDelete = DonsGorgees.findOne({joueur: idEmmeteur})._id;
+                    DonsGorgees.remove({_id: idDelete});
                 }
-                let don="";
+                let don = "";
                 // on affiche le message avant le delete
-                if(idEmmeteur === idDestinataire){
+                if (idEmmeteur === idDestinataire) {
                     don += "Dans un élan de générosité inégalé... " + pseudoEmmeteur + " s'autoflagelle";
-                }
-                else {
-                    don = pseudoEmmeteur + " donne ";
-                    if(nbGorgees%5 === 0) {
-                        if (nbGorgees / 5 === 1) {
-                            don += nbGorgees / 5 + " cul sec ";
-                        } else {
-                            don += nbGorgees / 5 + " culs secs ";
-                        }
+                } else {
+                    switch (true) {
+                        case (alea === 0):
+                            don = pseudoEmmeteur + " donne ";
+                            don = milieuPhrase(don, nbGorgees);
+                            don += "à " + pseudoDestinataire + " mais " + pseudoEmmeteur + " prend une gorgée bonus pour la soif !";
+                            break;
+                        case (alea === 77):
+                            don = "MEGAFIREBACK !!!!!!! " + pseudoDestinataire + " est le maître du monde et renvoie ";
+                            don = milieuPhrase(don, nbGorgees);
+                            don += "à TOUT LE MONDE !!!";
+                            break;
+                        case (alea < 85):
+                            don = pseudoEmmeteur + " donne ";
+                            don = milieuPhrase(don, nbGorgees);
+                            don += "à " + pseudoDestinataire;
+                            break;
+                        case (alea < 94):
+                            don = "Partenaire particulier ! " + pseudoDestinataire + " peut choisir quelqu'un pour l'accompagner pour ";
+                            don = milieuPhrase(don, nbGorgees);
+                            break;
+                        case (alea < 101):
+                            don = "FIREBACK !!! " + pseudoDestinataire + " renvoie ";
+                            don = milieuPhrase(don, nbGorgees);
+                            don += "à " + pseudoEmmeteur;
+                            break;
                     }
-                    else if (nbGorgees > 1) {
-                        don += nbGorgees + " gorgées ";
-                    } else {
-                        don += nbGorgees + " gorgée ";
-                    }
-                    don += "à " + pseudoDestinataire;
+
                 }
                 return don;
             } catch (error) {
                 console.log("erreur lors du don : " + error);
             }
         },
+        'updateMessage': (message) => {
+            try {
+                Message.upsert({don: "don"}, {don: "don", message: message});
+            } catch (error) {
+                console.log("erreur lors du updateMessage : " + error);
+            }
+        },
         'jokerDB': (id) => {
             try {
-                const jouerClique = ListeJoueurs.find({_id:id}, {fields:{'pseudo':1}}).fetch()[0];
-                ListeJoueurs.update({_id:id}, {$set:{joker:true}});
+                const jouerClique = ListeJoueurs.find({_id: id}, {fields: {'pseudo': 1}}).fetch()[0];
+                ListeJoueurs.update({_id: id}, {$set: {joker: true}});
                 return jouerClique.pseudo;
             } catch (error) {
                 console.log("erreur lors du joker : " + error);
             }
         },
         'RAZJoker': () => {
-            console.log("RAZ des joker ! ");
             try {
-                ListeJoueurs.update({maitreDuJeu:true}, {$set : {joker: false}}, {multi:true});
+                ListeJoueurs.update({maitreDuJeu: true}, {$set: {joker: false}}, {multi: true});
                 return true;
             } catch (error) {
                 console.log("erreur lors du joker : " + error);
@@ -293,3 +335,18 @@ Meteor.startup(() => {
         },
     });
 });
+
+function milieuPhrase(don, nbGorgees) {
+    if (nbGorgees % 5 === 0) {
+        if (nbGorgees / 5 === 1) {
+            don += nbGorgees / 5 + " cul sec ";
+        } else {
+            don += nbGorgees / 5 + " culs secs ";
+        }
+    } else if (nbGorgees > 1) {
+        don += nbGorgees + " gorgées ";
+    } else {
+        don += nbGorgees + " gorgée ";
+    }
+    return don;
+}

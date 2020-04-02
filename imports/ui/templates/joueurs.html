@@ -3,13 +3,13 @@
         <tr style="font-style: italic">Tour en cours : <img height="21" src="/images/jeton.png"/></tr>
         <tr style="font-style: italic">Maître du jeu : <img height="21" src="/images/couronne.png"/></tr>
         <th style="font-size: large">ZoubiPlayers</th>
+
         {{#each joueur in joueurs}}
             <tr>
                 <hr>
             </tr>
             <tr>
                 <td colspan="4" id="pseudo">{{ joueur.pseudo }}</td>
-
                 {{#if isEnCours joueur}}
                     <!-- Si c'est le joueur en cours-->
                     {{#if isMJ joueur}}
@@ -39,9 +39,9 @@
                 <td>
                     {{#each carte in joueur.mainDuJoueur}}
                         {{#if isRed carte}}
-                            <span style="color:red;font-size:40px;" class="carte">{{ getUnicode carte }} </span>
+                            <span style="color:red;font-size:77px;" class="carte">{{ getUnicode carte }} </span>
                         {{else}}
-                            <span style="color:black;font-size:40px;" class="carte">{{ getUnicode carte }} </span>
+                            <span style="color:black;font-size:77px;" class="carte">{{ getUnicode carte }} </span>
                         {{/if}}
                     {{/each}}
                 </td>

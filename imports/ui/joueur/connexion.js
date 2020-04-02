@@ -1,4 +1,5 @@
 import '../templates/connexion.html';
+
 const screenfull = require('screenfull');
 
 ConnexionsLocales = new Mongo.Collection('connexionsLocales', {connection: null});
@@ -12,11 +13,8 @@ Template.connexionTemplate.onCreated(function () {
 });
 
 Template.connexionTemplate.helpers({
-    erreurConnexion:()=>{
-        console.log(Template.instance().connexion_failed.get());
-        return Template.instance().connexion_failed.get();
-    }
 });
+
 
 Template.connexionTemplate.events({
     'submit #connexion'(event, instance) {
@@ -26,11 +24,10 @@ Template.connexionTemplate.events({
                 if (error) {
                     console.log(" Erreur dans ajouterJoueur" + error);
                 } else {
-                    if(result != null) {
-                        ConnexionsLocales.insert({pseudo: event.target.pseudo.value});
+                    if (result != null) {
+                        insertJoueurLocal(event.target.pseudo.value);
                         Router.go("phase0");
-                    }
-                    else{
+                    } else {
                         $(".pseudoModale").text(event.target.pseudo.value);
                         $("#confirmer").val(event.target.pseudo.value);
                         $('#modaleErreurConnexion').modal('toggle');
@@ -45,26 +42,30 @@ Template.connexionTemplate.events({
             screenfull.toggle();
         }
     },
-    'click #confirmer'(event){
-        const joueursLocaux = ConnexionsLocales.find({_id:{$exists: true}}).fetch();
-        let joueurLocalExistant = false;
-        joueursLocaux.forEach(joueur => {
-            joueurLocalExistant = joueur.pseudo === event.target.value;
-        });
-        if(!joueurLocalExistant) {
-            ConnexionsLocales.insert({pseudo: event.target.value});
-        }
-        $('#modaleErreurConnexion').on('hidden.bs.modal', function() {
+    'click #confirmer'(event) {
+        insertJoueurLocal(event.target.value);
+        $('#modaleErreurConnexion').on('hidden.bs.modal', function () {
             Router.go("phase0");
         }).modal('hide');
 
     },
+    'click #annuler'(event) {
+        Router.go("phase0");
+    },
 });
 
-export const deconnecte = () => {
-    return ConnexionsLocales.find({_id:{$exists:true}}).count() === 0 ;
-};
-
+function insertJoueurLocal(pseudo) {
+    const joueursLocaux = ConnexionsLocales.find({_id: {$exists: true}}).fetch();
+    let joueurLocalExistant = false;
+    joueursLocaux.forEach(joueur => {
+        if (joueur.pseudo.trim().toUpperCase() === pseudo.trim().toUpperCase()) {
+            joueurLocalExistant = true;
+        }
+    });
+    if (!joueurLocalExistant) {
+        ConnexionsLocales.insert({pseudo: pseudo});
+    }
+}
 
 
 

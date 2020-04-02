@@ -1,10 +1,12 @@
 <template name="ApplicationLayout">
     {{> menu}}
-    <aside>
-        {{> joueurs}}
+    <div id="joueursEtCartesCommunes">
+        <aside>
+            {{> joueurs}}
     </aside>
     <main>
         {{> yield}}
     </main>
-    <img src="/images/fullscreen.png" class="fullscreen">
+    </div>
+    <img src="images/fullscreen.png" class="fullscreen">
 </template>

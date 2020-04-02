@@ -1,29 +1,51 @@
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
 
-body{
-    text-align: center;
-}
-aside, main{
-    display: inline-block;
-}
-aside{
-    float: left;
+body {
+  text-align: center;
 }
 
-.nonMJ{
-    pointer-events: none !important;
-}
-.nonDonneur{
-    pointer-events: none !important;
+aside, main {
+  display: inline-block;
 }
 
-.cible{
-    margin:1%;
+#joueursEtCartesCommunes {
+  display: flex;
 }
 
-#debuter{
-    margin-top: 50%;
+aside {
+  float: left;
+  margin: 1%;
 }
+
+table {
+  margin: 1% auto;
+}
+
+
+.nonMJ {
+  pointer-events: none;
+}
+
+.nonMJ > button {
+  visibility: hidden;
+}
+
+.nonDonneur {
+  pointer-events: none;
+}
+
+.nonDonneur * > button {
+  visibility: hidden;
+}
+
+.cible {
+  margin: 1%;
+}
+
+#debuter {
+  margin-top: 50%;
+}
+
 /* Ici on s'occupe de l'arène du premier tour */
 #dosPaquet, #dosPaquetFinal{
     cursor: pointer;
@@ -42,21 +64,20 @@ aside{
     cursor: pointer;
 }
 
-.images{
-    display:flex;
-    flex-direction: column;
-}
-
 .fullscreen{
     position: fixed;
     right: 5%;
-    bottom: 5%;
+  bottom: 5%;
 }
 
 #gorgees {
-    width: 3em;
+  width: 3em;
 }
 
-#headDon{
-    display: inline-flex;
+#headDon {
+  display: inline-flex;
+}
+
+#don {
+  color: red;
 }
